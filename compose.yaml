@@ -1,0 +1,47 @@
+services:
+  database:
+    container_name: gt-postgres
+    image: postgres:16.2-alpine3.18
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gt-app-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 4096M
+
+  server:
+    container_name: gt-server
+    build:
+      context: ./server
+    depends_on:
+      - database
+    networks:
+      - gt-app-network
+
+  web:
+    container_name: gt-web
+    build:
+      context: .
+    ports:
+      - 80:80
+    networks:
+      - gt-app-network
+
+networks:
+  gt-app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    external: false

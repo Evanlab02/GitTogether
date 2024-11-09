@@ -1,0 +1,10 @@
+:80 {
+    handle_path /* {
+    	reverse_proxy gt-server:80
+    }
+
+    handle_path /docs/* {
+        root * /var/www/html/docs/
+        file_server
+    }
+}
