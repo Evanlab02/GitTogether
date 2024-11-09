@@ -1,10 +1,11 @@
 FROM node:20.17.0-alpine3.20 AS build
 
 WORKDIR /build/
-COPY --from=deps /app/ /build/
+COPY . /build/
 
 RUN npm ci
 RUN npm run build
+RUN rm -rf node_modules/
 
 FROM php:8.3.11-apache AS final
 
@@ -23,14 +24,13 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /var/www/html/
 RUN docker-php-ext-install pdo_pgsql pgsql curl
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY . /var/www/html/
+COPY --from=build /build/ /var/www/html/
 RUN composer install --no-dev --no-interaction
 RUN php artisan optimize
 RUN php artisan config:cache
 RUN php artisan event:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
-
 
 # Set environment variable for document root
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
