@@ -4,9 +4,12 @@ GitTogether is a tool for managing and viewing your GitHub PRs.
 
 NOTE: Still very much under development, so not much to see here.
 
+You can find the documentation [here](https://evanlab-gme8r.ondigitalocean.app/gt/)
+
 ## Stack
 
 This project leverages a range of technologies across both client and server sides for robust and flexible functionality:
+
 ### Containerization
 
 - Docker
