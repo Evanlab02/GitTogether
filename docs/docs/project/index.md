@@ -72,4 +72,70 @@ You will also need to tell the API which repositories it should use. This will l
 
 ## Pull requests - List View
 
-![Wireframe of list view](./assets/PR-list.png)
+![Wireframe of list view](./assets/PR-Overview.png)
+
+### Getting the data
+
+To retrieve this data, we will be using the GitHub pull requests API.
+
+[API Documentation](https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests)
+
+```bash
+curl -L \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer <YOUR-TOKEN>" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  https://api.github.com/repos/OWNER/REPO/pulls
+```
+
+### Filters and Charts
+
+To calculate the filters, we should only require the values that have been manually configured by the user.
+
+For the charts, we will be able to calculate this from the values we have received from the GitHub API.
+
+### Table
+
+The tables are pretty standard except for 2 things
+
+In the repository table, we will have 2 buttons in the actions column that does two things:
+
+- Resync for organization
+- Resync for repository
+
+What this will do, is just destroy the old cached value(s) for a repository or organization, and then re-query and cache them.
+
+We will also have a button on the PR table that will take you directly to the GitHub pull request.
+
+### Caching
+
+The GitHub API only allows requests for a single repositories pull requests and there is rate limiting on the GitHub API.
+So we will need to ensure that these requests are cached.
+
+All results will be cached for **1 hour**. This helps the application only pull what it needs at the time.
+
+#### How we will cache
+
+If we use something like Redis, the key will be something like
+
+`<org>-<repo>-prs` with a value of the API response payload.
+
+## Pull requests - Detail View
+
+This page will also use caching. Which will be covered below.
+
+![PR Detail page wireframe](./assets/PR-Detail-1.png)
+
+![PR Detail page wireframe using different tabs](./assets/PR-Detail-2.png)
+
+### Cards
+
+Here we will outline some key details about the PR.
+
+There will be buttons on the state card that will allow you to view the PR or resync it.
+
+### Caching
+
+If we use something like Redis, the key will be something like
+
+`<org>-<repo>-pr-<number>` with a value of the API response payload.

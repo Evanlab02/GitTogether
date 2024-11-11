@@ -30,4 +30,5 @@ theme:
 nav:
   - Overview: index.md
   - Roadmap: ROADMAP.md
-  - Project Outline: project/index.md
+  - Planning: 
+    - V1: project/index.md
